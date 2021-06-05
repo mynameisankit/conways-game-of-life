@@ -16,6 +16,16 @@ const styles = theme => ({
     blocked: {
         backgroundColor: theme.palette.primary.dark,
     },
+    buttonWrapper: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: `${theme.spacing(2)}px 0px`,
+        gap: theme.spacing(10),
+    },
+    button: {
+        fontSize: '30px',
+    },
 });
 
 export default styles;
