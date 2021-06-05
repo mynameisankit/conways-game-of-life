@@ -38,6 +38,8 @@ class Grid extends React.Component {
         this.handleMouseState = this.handleMouseState.bind(this);
         this.handleIfMouseInsideGrid = this.handleIfMouseInsideGrid.bind(this);
         this.startSimulation = this.startSimulation.bind(this);
+        this.resetBoard = this.resetBoard.bind(this);
+        this.stopSimulation = this.stopSimulation.bind(this);
     }
 
     componentDidMount() {
@@ -48,7 +50,7 @@ class Grid extends React.Component {
     componentWillUnmount() {
         const { timer } = this.state;
 
-        if(timer) {
+        if (timer) {
             clearInterval(timer);
         }
     }
@@ -60,7 +62,7 @@ class Grid extends React.Component {
         const rows = 20;//parseInt(screenHeight / sideLength);
         const cols = parseInt(screenWidth / sideLength);
 
-        const board = Array(rows).fill(0).map(() => Array(cols).fill(0).map(() => false));
+        const board = Array(rows).fill(0).map(() => Array(cols).fill(0));
 
         this.setState({
             grid: {
@@ -109,6 +111,17 @@ class Grid extends React.Component {
         }
     }
 
+    stopSimulation() {
+        const { timer } = this.state;
+
+        clearInterval(timer);
+
+        this.setState({
+            timer: null,
+            isSimulating: false,
+        });
+    }
+
     handleIfMouseInsideGrid(event, state) {
         event.preventDefault();
 
@@ -123,21 +136,39 @@ class Grid extends React.Component {
             isSimulating: true,
         });
 
+        //TODO: Bug Here
         this.setState({
             timer: setInterval(() => {
-                const {board, ...rest} = this.state;
-                const newBoard = generateNextState(board);
-
-                console.log(newBoard);
-
-                this.setState({
-                    grid: {
-                        board: newBoard,
-                        ...rest
-                    },
+                this.setState(state => {
+                    return ({
+                        grid: {
+                            board: generateNextState(state.grid.board),
+                            rows: state.grid.rows,
+                            cols: state.grid.cols,
+                        },
+                    });
                 });
             }, 300),
         });
+    }
+
+    resetBoard() {
+        this.stopSimulation();
+
+        this.setState({
+            grid: {
+                board: [],
+                rows: 0,
+                cols: 0,
+            },
+            cell: {
+                sideLength: 30,
+            },
+            isMouseClicked: false,
+            isSimulating: false,
+        });
+
+        this.handleResize();
     }
 
     render() {
@@ -186,9 +217,9 @@ class Grid extends React.Component {
                     display='flex'
                     justifyContent='center'
                     alignItems='center'
-                    onClick={this.startSimulation}
                 >
-                    <Button size='large' variant='contained' color='primary'>Start</Button>
+                    <Button size='large' onClick={this.startSimulation} variant='contained' color='primary'>Start</Button>
+                    <Button size='large' onClick={this.resetBoard} variant='contained' color='primary'>Reset</Button>
                 </Box>
             </Container>
         );

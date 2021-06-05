@@ -10,7 +10,6 @@ function generateNextState(oldBoard) {
             j = parseInt(j);
 
             const neighbours = getNeighbours(oldBoard, i, j);
-
             if(neighbours <= 1 || neighbours >= 4) {
                 board[i][j] = 0;
             }
